@@ -1,14 +1,14 @@
 import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
 import {
-  UserPool,
-  Mfa,
   AccountRecovery,
+  Mfa,
   StringAttribute,
+  UserPool,
   UserPoolEmail,
 } from 'aws-cdk-lib/aws-cognito';
+import { Construct } from 'constructs';
 
-export class CampaignManagerStack extends Stack {
+export class AuthenticationStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
