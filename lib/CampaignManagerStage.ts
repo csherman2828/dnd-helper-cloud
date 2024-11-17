@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 
 import { WebAppDeploymentStack } from './web-app-deployment/WebAppDeploymentStack';
 import { AuthenticationStack } from './authentication/AuthenticationStack';
+import { StorageStack } from './storage/StorageStack';
 
 export class CampaignManagerStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
@@ -10,5 +11,6 @@ export class CampaignManagerStage extends Stage {
 
     new AuthenticationStack(this, 'Authentication');
     new WebAppDeploymentStack(this, 'WebAppDeployment');
+    new StorageStack(this, 'Storage');
   }
 }
