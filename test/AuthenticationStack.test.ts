@@ -6,6 +6,6 @@ it('synths with user pool', () => {
   const app = new cdk.App();
   const stack = new AuthenticationStack(app, 'MyTestStack');
   Template.fromStack(stack).hasResource('AWS::Cognito::UserPool', {
-    DeletionPolicy: 'Retain',
+    DeletionPolicy: 'Delete',
   });
 });

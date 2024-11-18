@@ -13,8 +13,8 @@ export class AuthenticationStack extends Stack {
     super(scope, id, props);
 
     const userPool = new UserPool(this, 'CampaignManagerAuthentication', {
-      deletionProtection: true,
-      removalPolicy: RemovalPolicy.RETAIN,
+      deletionProtection: false,
+      removalPolicy: RemovalPolicy.DESTROY,
       signInAliases: {
         email: true,
         username: false,
@@ -23,15 +23,15 @@ export class AuthenticationStack extends Stack {
       },
       signInCaseSensitive: false,
       passwordPolicy: {
-        minLength: 8,
+        minLength: 7,
         requireLowercase: true,
         requireDigits: true,
         requireSymbols: true,
         requireUppercase: true,
       },
-      mfa: Mfa.OPTIONAL,
+      mfa: Mfa.OFF,
       mfaSecondFactor: {
-        sms: true,
+        sms: false,
         otp: false,
       },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
@@ -46,10 +46,6 @@ export class AuthenticationStack extends Stack {
       },
       standardAttributes: {
         email: {
-          required: true,
-          mutable: true,
-        },
-        phoneNumber: {
           required: true,
           mutable: true,
         },
