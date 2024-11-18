@@ -10,7 +10,7 @@ export class StorageStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, { ...props, terminationProtection: true });
 
-    new DynamoTable(this, 'MyTable', {
+    new DynamoTable(this, 'Table', {
       partitionKey: { name: 'PK', type: AttributeType.STRING },
       sortKey: { name: 'SK', type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
