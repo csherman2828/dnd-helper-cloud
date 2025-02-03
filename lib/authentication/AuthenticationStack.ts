@@ -35,7 +35,7 @@ export class AuthenticationStack extends Stack {
         otp: false,
       },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
-      selfSignUpEnabled: true,
+      selfSignUpEnabled: false,
       autoVerify: {
         email: true,
         phone: false,
