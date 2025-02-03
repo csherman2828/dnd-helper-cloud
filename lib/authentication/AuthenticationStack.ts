@@ -55,10 +55,6 @@ export class AuthenticationStack extends Stack {
       },
       email: UserPoolEmail.withCognito(),
       enableSmsRole: true,
-      deviceTracking: {
-        challengeRequiredOnNewDevice: false,
-        deviceOnlyRememberedOnUserPrompt: false,
-      },
     });
 
     userPool.addClient('WebAppClient', {
