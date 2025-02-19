@@ -1,5 +1,5 @@
 {
-  "name": "campaign-manager-aws",
+  "name": "dnd-helper-cloud",
   "version": "0.1.0",
   "bin": {
     "app": "bin/app.js"
@@ -11,14 +11,14 @@
     "prepare": "husky",
     "lint-staged": "lint-staged",
     "list": "cdk list",
-    "synth:web": "cdk synth CampaignManager/WebAppDeployment",
-    "diff:web": "cdk diff CampaignManager/WebAppDeployment",
-    "deploy:web": "cdk deploy CampaignManager/WebAppDeployment",
-    "destroy:web": "cdk destroy CampaignManager/WebAppDeployment",
-    "synth:auth": "cdk synth CampaignManager/Authentication",
-    "diff:auth": "cdk diff CampaignManager/Authentication",
-    "deploy:auth": "cdk deploy CampaignManager/Authentication",
-    "destroy:auth": "cdk destroy CampaignManager/Authentication"
+    "synth:web": "cdk synth DndHelper/Web",
+    "diff:web": "cdk diff DndHelper/Web",
+    "deploy:web": "cdk deploy DndHelper/Web",
+    "destroy:web": "cdk destroy DndHelper/Web",
+    "synth:auth": "cdk synth DndHelper/Authentication",
+    "diff:auth": "cdk diff DndHelper/Authentication",
+    "deploy:auth": "cdk deploy DndHelper/Authentication",
+    "destroy:auth": "cdk destroy DndHelper/Authentication"
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",

@@ -12,7 +12,7 @@ import {
 } from 'aws-cdk-lib/aws-codebuild';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 
-interface FrontendRepoPipelineProps {
+interface FrontendRepoDeploymentProps {
   bucket: IBucket;
   repoConfig: {
     owner: string;
@@ -22,8 +22,12 @@ interface FrontendRepoPipelineProps {
   };
 }
 
-class FrontendRepoPipeline extends Construct {
-  constructor(scope: Construct, id: string, props: FrontendRepoPipelineProps) {
+class FrontendRepoDeployment extends Construct {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: FrontendRepoDeploymentProps,
+  ) {
     super(scope, id);
 
     const { bucket, repoConfig } = props;
@@ -80,5 +84,5 @@ class FrontendRepoPipeline extends Construct {
   }
 }
 
-export default FrontendRepoPipeline;
-export type { FrontendRepoPipelineProps };
+export default FrontendRepoDeployment;
+export type { FrontendRepoDeploymentProps };

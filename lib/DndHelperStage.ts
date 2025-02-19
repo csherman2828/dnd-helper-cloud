@@ -4,12 +4,12 @@ import { Construct } from 'constructs';
 import { WebStack } from './web/WebStack';
 import { AuthenticationStack } from './auth/AuthenticationStack';
 
-export class CampaignManagerStage extends Stage {
+export class DndHelperStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
     new AuthenticationStack(this, 'Authentication');
-    new WebStack(this, 'WebAppDeployment', {
+    new WebStack(this, 'Web', {
       hostedZoneDomainName: 'shermaniac.com',
       domainName: 'dnd.shermaniac.com',
       repoConfig: {

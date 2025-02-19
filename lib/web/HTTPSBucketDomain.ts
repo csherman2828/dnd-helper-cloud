@@ -15,18 +15,14 @@ import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { PolicyStatement, Effect, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 
-interface HTTPSBucketDistributionProps {
+interface HTTPSBucketDomainProps {
   bucket: IBucket;
   domainName: string;
   hostedZoneDomainName: string;
 }
 
-class HTTPSBucketDistribution extends Construct {
-  constructor(
-    scope: Construct,
-    id: string,
-    props: HTTPSBucketDistributionProps,
-  ) {
+class HTTPSBucketDomain extends Construct {
+  constructor(scope: Construct, id: string, props: HTTPSBucketDomainProps) {
     super(scope, id);
 
     const { bucket, domainName, hostedZoneDomainName } = props;
@@ -73,4 +69,4 @@ class HTTPSBucketDistribution extends Construct {
   }
 }
 
-export default HTTPSBucketDistribution;
+export default HTTPSBucketDomain;

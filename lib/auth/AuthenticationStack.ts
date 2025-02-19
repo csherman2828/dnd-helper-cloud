@@ -12,7 +12,7 @@ export class AuthenticationStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const userPool = new UserPool(this, 'CampaignManagerAuthentication', {
+    const userPool = new UserPool(this, 'DndHelperAuthentication', {
       deletionProtection: false,
       removalPolicy: RemovalPolicy.DESTROY,
       signInAliases: {
