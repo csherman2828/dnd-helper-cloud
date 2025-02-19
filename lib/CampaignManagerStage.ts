@@ -1,7 +1,7 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-// import { WebAppDeploymentStack } from './web-app-deployment/WebAppDeploymentStack';
+import { WebAppDeploymentStack } from './web-app-deployment/WebAppDeploymentStack';
 import { AuthenticationStack } from './authentication/AuthenticationStack';
 // import { StorageStack } from './storage/StorageStack';
 
@@ -10,7 +10,7 @@ export class CampaignManagerStage extends Stage {
     super(scope, id, props);
 
     new AuthenticationStack(this, 'Authentication');
-    // new WebAppDeploymentStack(this, 'WebAppDeployment');
+    new WebAppDeploymentStack(this, 'WebAppDeployment');
     // new StorageStack(this, 'Storage');
   }
 }
