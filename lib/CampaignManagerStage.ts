@@ -13,7 +13,7 @@ export class CampaignManagerStage extends Stage {
     new WebAppDeploymentStack(this, 'WebAppDeployment', {
       hostedZoneDomainName: 'shermaniac.com',
       domainName: 'dnd.shermaniac.com',
-      repo: {
+      repoConfig: {
         owner: 'csherman2828',
         name: 'dnd-helper-web',
         branch: 'main',
