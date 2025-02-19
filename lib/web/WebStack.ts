@@ -5,7 +5,7 @@ import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 import HTTPSBucketDistribution from './HTTPSBucketDistribution';
 import FrontendRepoPipeline from './FrontendRepoPipeline';
 
-interface WebAppDeploymentStackProps extends StackProps {
+interface WebStackProps extends StackProps {
   hostedZoneDomainName: string;
   domainName: string;
   repoConfig: {
@@ -16,8 +16,8 @@ interface WebAppDeploymentStackProps extends StackProps {
   };
 }
 
-export class WebAppDeploymentStack extends Stack {
-  constructor(scope: Construct, id: string, props: WebAppDeploymentStackProps) {
+export class WebStack extends Stack {
+  constructor(scope: Construct, id: string, props: WebStackProps) {
     super(scope, id, props);
 
     const { hostedZoneDomainName, domainName, repoConfig } = props;

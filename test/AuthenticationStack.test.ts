@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { AuthenticationStack } from '../lib/authentication/AuthenticationStack';
+import { AuthenticationStack } from '../lib/auth/AuthenticationStack';
 
 it('synths with user pool', () => {
   const app = new cdk.App();
