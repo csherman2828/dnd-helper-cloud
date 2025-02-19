@@ -26,31 +26,40 @@ import {
 } from 'aws-cdk-lib/aws-codebuild';
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 
-const HOSTED_ZONE = 'shermaniac.com';
-const DOMAIN_NAME = 'dnd.shermaniac.com';
+interface WebAppDeploymentStackProps extends StackProps {
+  hostedZoneDomainName: string;
+  domainName: string;
+  repo: {
+    owner: string;
+    name: string;
+    branch: string;
+    codeConnectionArn: string;
+  };
+}
 
 export class WebAppDeploymentStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: WebAppDeploymentStackProps) {
     super(scope, id, props);
 
+    const { hostedZoneDomainName, domainName, repo } = props;
+
     const webAppBucket = new Bucket(this, 'WebAppBucket', {
-      bucketName: 'dnd-helper-web-prod',
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL, // Keep bucket private
     });
 
     const hostedZone = HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: HOSTED_ZONE,
+      domainName: hostedZoneDomainName,
     });
 
     const certificate = new Certificate(this, 'Certificate', {
-      domainName: DOMAIN_NAME,
+      domainName,
       validation: CertificateValidation.fromDns(hostedZone),
     });
 
     const distribution = new Distribution(this, 'WebAppDistribution', {
-      domainNames: [DOMAIN_NAME],
+      domainNames: [domainName],
       certificate: certificate,
       defaultRootObject: 'index.html',
       httpVersion: HttpVersion.HTTP2_AND_3,
@@ -76,26 +85,18 @@ export class WebAppDeploymentStack extends Stack {
 
     new ARecord(this, 'WebAppAliasRecord', {
       zone: hostedZone,
-      recordName: DOMAIN_NAME,
+      recordName: domainName,
       target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
-
-    // create a certificate for dnd.shermaniac.com
-    // create a distribution pointing to the bucket
-    // do the propper access control OAC
-    // make sure dnd.shermaniac.com is one of the althernate domain names on the distribution
-    // make sure index.html is the default root object
-    // create a route53 record for dnd.shermaniac.com pointing to the distribution
 
     const sourceArtifact = new Artifact();
     const sourceAction = new CodeStarConnectionsSourceAction({
       actionName: 'GitHub',
-      owner: 'csherman2828',
-      repo: 'dnd-helper-web',
-      branch: 'main',
+      owner: repo.owner,
+      repo: repo.name,
+      branch: repo.branch,
       output: sourceArtifact,
-      connectionArn:
-        'arn:aws:codeconnections:us-east-1:056680897227:connection/1e7e31d8-cb45-4cac-9d2d-aa59055e88bf',
+      connectionArn: repo.codeConnectionArn,
       triggerOnPush: true,
     });
 
