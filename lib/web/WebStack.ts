@@ -8,11 +8,11 @@ import FrontendRepoPipeline from './FrontendRepoDeployment';
 interface WebStackProps extends StackProps {
   hostedZoneDomainName: string;
   domainName: string;
-  repoConfig: {
+  githubSourceConfig: {
     owner: string;
-    name: string;
+    repo: string;
     branch: string;
-    codeConnectionArn: string;
+    codestarConnectionArn: string;
   };
 }
 
@@ -20,7 +20,7 @@ export class WebStack extends Stack {
   constructor(scope: Construct, id: string, props: WebStackProps) {
     super(scope, id, props);
 
-    const { hostedZoneDomainName, domainName, repoConfig } = props;
+    const { hostedZoneDomainName, domainName, githubSourceConfig } = props;
 
     const webAppBucket = new Bucket(this, 'Site', {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -36,7 +36,7 @@ export class WebStack extends Stack {
 
     new FrontendRepoPipeline(this, 'Deployment', {
       bucket: webAppBucket,
-      repoConfig,
+      githubSourceConfig,
     });
   }
 }

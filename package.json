@@ -18,7 +18,15 @@
     "synth:auth": "cdk synth DndHelper/Authentication",
     "diff:auth": "cdk diff DndHelper/Authentication",
     "deploy:auth": "cdk deploy DndHelper/Authentication",
-    "destroy:auth": "cdk destroy DndHelper/Authentication"
+    "destroy:auth": "cdk destroy DndHelper/Authentication",
+    "synth:api:platform": "cdk synth DndHelper/ApiPlatform",
+    "diff:api:platform": "cdk diff DndHelper/ApiPlatform",
+    "deploy:api:platform": "cdk deploy DndHelper/ApiPlatform",
+    "destroy:api:platform": "cdk destroy DndHelper/ApiPlatform",
+    "synth:api": "cdk synth DndHelper/Api",
+    "diff:api": "cdk diff DndHelper/Api",
+    "deploy:api": "cdk deploy DndHelper/Api",
+    "destroy:api": "cdk destroy DndHelper/Api"
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",

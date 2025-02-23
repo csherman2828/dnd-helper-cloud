@@ -14,11 +14,11 @@ import { IBucket } from 'aws-cdk-lib/aws-s3';
 
 interface FrontendRepoDeploymentProps {
   bucket: IBucket;
-  repoConfig: {
+  githubSourceConfig: {
     owner: string;
-    name: string;
+    repo: string;
     branch: string;
-    codeConnectionArn: string;
+    codestarConnectionArn: string;
   };
 }
 
@@ -30,17 +30,17 @@ class FrontendRepoDeployment extends Construct {
   ) {
     super(scope, id);
 
-    const { bucket, repoConfig } = props;
+    const { bucket, githubSourceConfig } = props;
 
     const sourceArtifact = new Artifact();
     const sourceAction = new CodeStarConnectionsSourceAction({
       actionName: 'GitHub',
-      owner: repoConfig.owner,
-      repo: repoConfig.name,
-      branch: repoConfig.branch,
-      output: sourceArtifact,
-      connectionArn: repoConfig.codeConnectionArn,
+      owner: githubSourceConfig.owner,
+      repo: githubSourceConfig.repo,
+      branch: githubSourceConfig.branch,
+      connectionArn: githubSourceConfig.codestarConnectionArn,
       triggerOnPush: true,
+      output: sourceArtifact,
     });
 
     const buildProject = new PipelineProject(this, 'BuildProject', {
