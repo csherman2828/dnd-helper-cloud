@@ -6,7 +6,7 @@ import {
   AwsLogDriver,
   Cluster,
 } from 'aws-cdk-lib/aws-ecs';
-import { Peer, Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IRepository } from 'aws-cdk-lib/aws-ecr';
 import { Construct } from 'constructs';
 import {
@@ -76,7 +76,7 @@ export class ApiStack extends Stack {
         allowAllOutbound: true,
       },
     );
-    loadBalancerSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(80));
+    // loadBalancerSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(80));
 
     // ECS Task Definition
     const taskDefinition = new FargateTaskDefinition(this, 'TaskDefinition', {
