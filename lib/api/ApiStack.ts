@@ -23,6 +23,7 @@ import {
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 
 interface ApiStackProps {
   github: {
@@ -35,6 +36,7 @@ interface ApiStackProps {
   hostedZoneDomain: string;
   subdomain: string;
   region: string;
+  table: ITable;
 }
 
 const HTTP_PORT = 80;
@@ -45,7 +47,8 @@ export class ApiStack extends Stack {
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id);
 
-    const { ecrRepo, github, region, subdomain, hostedZoneDomain } = props;
+    const { ecrRepo, github, region, subdomain, hostedZoneDomain, table } =
+      props;
 
     const fullDomainName = `${subdomain}.${hostedZoneDomain}`;
 
@@ -85,6 +88,9 @@ export class ApiStack extends Stack {
       memoryLimitMiB: 512,
       cpu: 256,
     });
+
+    // Grant the ECS task role access to the DynamoDB table
+    table.grantReadWriteData(taskDefinition.taskRole);
 
     const container = taskDefinition.addContainer('ExpressContainer', {
       image: ContainerImage.fromEcrRepository(ecrRepo),

@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 
 import { WebStack } from './web/WebStack';
 import { AuthenticationStack } from './auth/AuthenticationStack';
+import { DataStack } from './data/DataStack';
 import { ApiStack } from './api/ApiStack';
 import { ApiPlatformStack } from './api/ApiPlatformStack';
 
@@ -29,6 +30,8 @@ export class DndHelperStage extends Stage {
     const { hostedZoneDomain, subdomain, github, env } = props;
 
     const { region } = env;
+
+    const { table } = new DataStack(this, 'Data');
 
     new AuthenticationStack(this, 'Authentication');
     new WebStack(this, 'Web', {
@@ -57,6 +60,7 @@ export class DndHelperStage extends Stage {
       },
       ecrRepo,
       region,
+      table,
     });
     apiStack.addDependency(apiPlatformStack);
   }
