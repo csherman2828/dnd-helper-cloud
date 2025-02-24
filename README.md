@@ -1,8 +1,7 @@
-# Welcome to your CDK TypeScript project
+# D&D Helper (Cloud)
 
-This is a blank project for CDK development with TypeScript.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+This repository defines Amazon Web Services (AWS) using the AWS Cloud
+Development Kit (CDK) as Infrastructure as Code (IaC).
 
 ## Useful commands
 
