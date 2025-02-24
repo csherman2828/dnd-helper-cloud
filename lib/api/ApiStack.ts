@@ -6,7 +6,7 @@ import {
   AwsLogDriver,
   Cluster,
 } from 'aws-cdk-lib/aws-ecs';
-import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { IRepository } from 'aws-cdk-lib/aws-ecr';
 import { Construct } from 'constructs';
 import {
@@ -54,10 +54,18 @@ export class ApiStack extends Stack {
 
     const fullDomainName = `${subdomainName}.${hostedZoneDomainName}`;
 
-    // Create a VPC with a single NAT Gateway (to stay in free tier)
+    // Use no NAT Gateways to avoid unnecessary costs
+    // I'd definitely take this on as a cost given revenue, but when I'm hosting
+    //   this for fun, I don't want to pay for it
     const vpc = new Vpc(this, 'Vpc', {
       maxAzs: 2,
-      natGateways: 1,
+      natGateways: 0,
+      subnetConfiguration: [
+        {
+          name: 'PublicSubnet',
+          subnetType: SubnetType.PUBLIC,
+        },
+      ],
     });
 
     // Create an ECS Cluster
