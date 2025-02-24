@@ -8,7 +8,7 @@ export class ApiPlatformStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    // const { githubSourceConfig } = props;
+    // const { github } = props;
 
     // Create an ECR repository
     this.ecrRepo = new Repository(this, 'ImageRepository');

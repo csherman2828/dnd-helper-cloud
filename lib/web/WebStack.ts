@@ -6,9 +6,9 @@ import HTTPSBucketDomain from './HTTPSBucketDomain';
 import FrontendRepoPipeline from './FrontendRepoDeployment';
 
 interface WebStackProps extends StackProps {
-  hostedZoneDomainName: string;
+  hostedZoneDomain: string;
   domainName: string;
-  githubSourceConfig: {
+  github: {
     owner: string;
     repo: string;
     branch: string;
@@ -20,7 +20,7 @@ export class WebStack extends Stack {
   constructor(scope: Construct, id: string, props: WebStackProps) {
     super(scope, id, props);
 
-    const { hostedZoneDomainName, domainName, githubSourceConfig } = props;
+    const { hostedZoneDomain, domainName, github } = props;
 
     const webAppBucket = new Bucket(this, 'Site', {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -31,12 +31,12 @@ export class WebStack extends Stack {
     new HTTPSBucketDomain(this, 'Domain', {
       bucket: webAppBucket,
       domainName,
-      hostedZoneDomainName,
+      hostedZoneDomain,
     });
 
     new FrontendRepoPipeline(this, 'Deployment', {
       bucket: webAppBucket,
-      githubSourceConfig,
+      github,
     });
   }
 }

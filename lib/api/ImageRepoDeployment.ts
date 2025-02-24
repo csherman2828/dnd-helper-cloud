@@ -17,26 +17,20 @@ import {
 interface ImageRepoDeploymentProps extends StackProps {
   ecrRepo: IRepository;
   ecsService: IBaseService;
-  githubSourceConfig: {
+  github: {
     owner: string;
     repo: string;
     branch: string;
     codestarConnectionArn: string;
   };
-  env: {
-    region: string;
-  };
+  region: string;
 }
 
 export class ImageRepoDeployment extends Construct {
   constructor(scope: Construct, id: string, props: ImageRepoDeploymentProps) {
     super(scope, id);
 
-    const {
-      env: { region },
-    } = props;
-
-    const { ecrRepo, ecsService, githubSourceConfig } = props;
+    const { ecrRepo, ecsService, github, region } = props;
 
     // CodeBuild project to build and push Docker image
     const buildProject = new PipelineProject(this, 'BuildProject', {
@@ -83,10 +77,10 @@ export class ImageRepoDeployment extends Construct {
       actions: [
         new CodeStarConnectionsSourceAction({
           actionName: 'GitHubSource',
-          owner: githubSourceConfig.owner,
-          repo: githubSourceConfig.repo,
-          branch: githubSourceConfig.branch,
-          connectionArn: githubSourceConfig.codestarConnectionArn,
+          owner: github.owner,
+          repo: github.repo,
+          branch: github.branch,
+          connectionArn: github.codestarConnectionArn,
           triggerOnPush: true,
           output: sourceOutput,
         }),

@@ -18,17 +18,17 @@ import { IBucket } from 'aws-cdk-lib/aws-s3';
 interface HTTPSBucketDomainProps {
   bucket: IBucket;
   domainName: string;
-  hostedZoneDomainName: string;
+  hostedZoneDomain: string;
 }
 
 class HTTPSBucketDomain extends Construct {
   constructor(scope: Construct, id: string, props: HTTPSBucketDomainProps) {
     super(scope, id);
 
-    const { bucket, domainName, hostedZoneDomainName } = props;
+    const { bucket, domainName, hostedZoneDomain } = props;
 
     const hostedZone = HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: hostedZoneDomainName,
+      domainName: hostedZoneDomain,
     });
 
     const certificate = new Certificate(this, 'Certificate', {

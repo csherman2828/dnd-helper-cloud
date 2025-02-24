@@ -1,4 +1,4 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack } from 'aws-cdk-lib';
 import {
   ContainerImage,
   FargateTaskDefinition,
@@ -24,16 +24,17 @@ import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
-interface ApiStackProps extends StackProps {
-  githubSourceConfig: {
+interface ApiStackProps {
+  github: {
     owner: string;
     repo: string;
     branch: string;
     codestarConnectionArn: string;
   };
   ecrRepo: IRepository;
-  hostedZoneDomainName: string;
-  subdomainName: string;
+  hostedZoneDomain: string;
+  subdomain: string;
+  region: string;
 }
 
 const HTTP_PORT = 80;
@@ -42,17 +43,11 @@ const EXPRESS_PORT = 3000;
 
 export class ApiStack extends Stack {
   constructor(scope: Construct, id: string, props: ApiStackProps) {
-    super(scope, id, props);
+    super(scope, id);
 
-    const {
-      ecrRepo,
-      githubSourceConfig,
-      env,
-      subdomainName,
-      hostedZoneDomainName,
-    } = props;
+    const { ecrRepo, github, region, subdomain, hostedZoneDomain } = props;
 
-    const fullDomainName = `${subdomainName}.${hostedZoneDomainName}`;
+    const fullDomainName = `${subdomain}.${hostedZoneDomain}`;
 
     // Use no NAT Gateways to avoid unnecessary costs
     // I'd definitely take this on as a cost given revenue, but when I'm hosting
@@ -114,7 +109,7 @@ export class ApiStack extends Stack {
     });
 
     const hostedZone = HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: hostedZoneDomainName,
+      domainName: hostedZoneDomain,
     });
 
     const certificate = new Certificate(this, 'Certificate', {
@@ -160,8 +155,8 @@ export class ApiStack extends Stack {
     new ImageRepoDeployment(this, 'Deployment', {
       ecrRepo,
       ecsService,
-      githubSourceConfig,
-      env: env as { region: string },
+      github,
+      region,
     });
   }
 }

@@ -6,27 +6,39 @@ import { AuthenticationStack } from './auth/AuthenticationStack';
 import { ApiStack } from './api/ApiStack';
 import { ApiPlatformStack } from './api/ApiPlatformStack';
 
-const CODESTAR_CONNECTION_ARN =
-  'arn:aws:codeconnections:us-east-1:056680897227:connection/1e7e31d8-cb45-4cac-9d2d-aa59055e88bf';
-const GITHUB_OWNER = 'csherman2828';
-
-const DOMAIN_NAME = 'shermaniac.com';
-const API_SUBDOMAIN_NAME = 'api.dnd';
-// const WEB_SUBDOMAIN_NAME = 'dnd';
+interface DndHelperStageProps extends StageProps {
+  hostedZoneDomain: string;
+  subdomain: string;
+  github: {
+    owner: string;
+    webRepo: string;
+    apiRepo: string;
+    branch: string;
+    codestarConnectionArn: string;
+  };
+  env: {
+    account: string;
+    region: string;
+  };
+}
 
 export class DndHelperStage extends Stage {
-  constructor(scope: Construct, id: string, props?: StageProps) {
+  constructor(scope: Construct, id: string, props: DndHelperStageProps) {
     super(scope, id, props);
+
+    const { hostedZoneDomain, subdomain, github, env } = props;
+
+    const { region } = env;
 
     new AuthenticationStack(this, 'Authentication');
     new WebStack(this, 'Web', {
-      hostedZoneDomainName: 'shermaniac.com',
-      domainName: 'dnd.shermaniac.com',
-      githubSourceConfig: {
-        owner: GITHUB_OWNER,
-        repo: 'dnd-helper-web',
-        branch: 'main',
-        codestarConnectionArn: CODESTAR_CONNECTION_ARN,
+      hostedZoneDomain,
+      domainName: `${subdomain}.${hostedZoneDomain}`,
+      github: {
+        owner: github.owner,
+        repo: github.webRepo,
+        branch: github.branch,
+        codestarConnectionArn: github.codestarConnectionArn,
       },
     });
 
@@ -35,16 +47,16 @@ export class DndHelperStage extends Stage {
     const { ecrRepo } = apiPlatformStack;
 
     const apiStack = new ApiStack(this, 'Api', {
-      hostedZoneDomainName: DOMAIN_NAME,
-      subdomainName: API_SUBDOMAIN_NAME,
-      githubSourceConfig: {
-        owner: GITHUB_OWNER,
-        repo: 'dnd-helper-api',
-        branch: 'main',
-        codestarConnectionArn: CODESTAR_CONNECTION_ARN,
+      hostedZoneDomain,
+      subdomain: `api.${subdomain}`,
+      github: {
+        owner: github.owner,
+        repo: github.apiRepo,
+        branch: github.branch,
+        codestarConnectionArn: github.codestarConnectionArn,
       },
       ecrRepo,
-      ...props,
+      region,
     });
     apiStack.addDependency(apiPlatformStack);
   }
