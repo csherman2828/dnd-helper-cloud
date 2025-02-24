@@ -10,6 +10,10 @@ const CODESTAR_CONNECTION_ARN =
   'arn:aws:codeconnections:us-east-1:056680897227:connection/1e7e31d8-cb45-4cac-9d2d-aa59055e88bf';
 const GITHUB_OWNER = 'csherman2828';
 
+const DOMAIN_NAME = 'shermaniac.com';
+const API_SUBDOMAIN_NAME = 'api.dnd';
+// const WEB_SUBDOMAIN_NAME = 'dnd';
+
 export class DndHelperStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
@@ -31,6 +35,8 @@ export class DndHelperStage extends Stage {
     const { ecrRepo } = apiPlatformStack;
 
     const apiStack = new ApiStack(this, 'Api', {
+      hostedZoneDomainName: DOMAIN_NAME,
+      subdomainName: API_SUBDOMAIN_NAME,
       githubSourceConfig: {
         owner: GITHUB_OWNER,
         repo: 'dnd-helper-api',

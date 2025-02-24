@@ -24,10 +24,6 @@ import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
-const DOMAIN_NAME = 'shermaniac.com';
-const SUBDOMAIN_NAME = 'api.dnd';
-const FULL_DOMAIN_NAME = `${SUBDOMAIN_NAME}.${DOMAIN_NAME}`;
-
 interface ApiStackProps extends StackProps {
   githubSourceConfig: {
     owner: string;
@@ -36,13 +32,27 @@ interface ApiStackProps extends StackProps {
     codestarConnectionArn: string;
   };
   ecrRepo: IRepository;
+  hostedZoneDomainName: string;
+  subdomainName: string;
 }
+
+const HTTP_PORT = 80;
+const HTTPS_PORT = 443;
+const EXPRESS_PORT = 3000;
 
 export class ApiStack extends Stack {
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
-    const { ecrRepo, githubSourceConfig, env } = props;
+    const {
+      ecrRepo,
+      githubSourceConfig,
+      env,
+      subdomainName,
+      hostedZoneDomainName,
+    } = props;
+
+    const fullDomainName = `${subdomainName}.${hostedZoneDomainName}`;
 
     // Create a VPC with a single NAT Gateway (to stay in free tier)
     const vpc = new Vpc(this, 'Vpc', {
@@ -82,10 +92,10 @@ export class ApiStack extends Stack {
       }),
       environment: {
         NODE_ENV: 'production',
-        PORT: '3000',
+        PORT: `${EXPRESS_PORT}`,
       },
     });
-    container.addPortMappings({ containerPort: 3000 });
+    container.addPortMappings({ containerPort: EXPRESS_PORT });
 
     // ECS Service
     const ecsService = new FargateService(this, 'Service', {
@@ -97,36 +107,36 @@ export class ApiStack extends Stack {
     });
 
     const hostedZone = HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: DOMAIN_NAME,
+      domainName: hostedZoneDomainName,
     });
 
     const certificate = new Certificate(this, 'Certificate', {
-      domainName: FULL_DOMAIN_NAME,
+      domainName: fullDomainName,
       validation: CertificateValidation.fromDns(hostedZone),
     });
 
     const httpsListener = loadBalancer.addListener('HttpsListener', {
-      port: 443,
+      port: HTTPS_PORT,
       open: true,
       certificates: [certificate],
     });
 
     loadBalancer.addListener('HttpListener', {
-      port: 80,
+      port: HTTP_PORT,
       open: true,
       defaultAction: ListenerAction.redirect({
         protocol: 'HTTPS',
-        port: '443',
+        port: `${HTTPS_PORT}`,
         permanent: true,
       }),
     });
 
     httpsListener.addTargets('TargetGroup', {
       protocol: ApplicationProtocol.HTTP,
-      port: 3000,
+      port: EXPRESS_PORT,
       targets: [ecsService],
       healthCheck: {
-        path: '/health', // ✅ Must match the route in Express
+        path: '/health',
         interval: Duration.seconds(30),
         timeout: Duration.seconds(5),
         healthyThresholdCount: 2,
@@ -136,7 +146,7 @@ export class ApiStack extends Stack {
 
     new ARecord(this, 'AliasRecord', {
       zone: hostedZone,
-      recordName: FULL_DOMAIN_NAME,
+      recordName: fullDomainName,
       target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
     });
 
