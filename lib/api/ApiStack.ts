@@ -76,7 +76,6 @@ export class ApiStack extends Stack {
         allowAllOutbound: true,
       },
     );
-    // loadBalancerSecurityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(80));
 
     // ECS Task Definition
     const taskDefinition = new FargateTaskDefinition(this, 'TaskDefinition', {
