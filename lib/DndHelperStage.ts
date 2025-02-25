@@ -36,7 +36,7 @@ export class DndHelperStage extends Stage {
     new AuthenticationStack(this, 'Authentication');
     new WebStack(this, 'Web', {
       hostedZoneDomain,
-      domainName: `${subdomain}.${hostedZoneDomain}`,
+      subdomain: subdomain,
       github: {
         owner: github.owner,
         repo: github.webRepo,

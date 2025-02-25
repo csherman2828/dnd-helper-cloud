@@ -1,4 +1,4 @@
-import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Bucket, BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
 
@@ -7,7 +7,7 @@ import FrontendRepoPipeline from './FrontendRepoDeployment';
 
 interface WebStackProps extends StackProps {
   hostedZoneDomain: string;
-  domainName: string;
+  subdomain: string;
   github: {
     owner: string;
     repo: string;
@@ -20,7 +20,9 @@ export class WebStack extends Stack {
   constructor(scope: Construct, id: string, props: WebStackProps) {
     super(scope, id, props);
 
-    const { hostedZoneDomain, domainName, github } = props;
+    const { hostedZoneDomain, subdomain, github } = props;
+
+    const domainName = `${subdomain}.${hostedZoneDomain}`;
 
     const webAppBucket = new Bucket(this, 'Site', {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -28,7 +30,7 @@ export class WebStack extends Stack {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL, // Keep bucket private
     });
 
-    new HTTPSBucketDomain(this, 'Domain', {
+    const { cloudfrontUrl } = new HTTPSBucketDomain(this, 'Domain', {
       bucket: webAppBucket,
       domainName,
       hostedZoneDomain,
@@ -37,6 +39,18 @@ export class WebStack extends Stack {
     new FrontendRepoPipeline(this, 'Deployment', {
       bucket: webAppBucket,
       github,
+    });
+
+    new CfnOutput(this, 'CloudfrontUrl', {
+      value: cloudfrontUrl,
+      description: 'The CloudFront URL of the web application',
+      exportName: 'CloudfrontUrl',
+    });
+
+    new CfnOutput(this, 'WebUrl', {
+      value: `https://${domainName}`,
+      description: 'The URL of the web application',
+      exportName: 'WebUrl',
     });
   }
 }

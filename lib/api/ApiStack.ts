@@ -1,4 +1,4 @@
-import { Duration, Stack } from 'aws-cdk-lib';
+import { CfnOutput, Duration, Stack } from 'aws-cdk-lib';
 import {
   ContainerImage,
   FargateTaskDefinition,
@@ -163,6 +163,12 @@ export class ApiStack extends Stack {
       ecsService,
       github,
       region,
+    });
+
+    new CfnOutput(this, 'ApiUrl', {
+      value: `https://${fullDomainName}`,
+      description: 'The URL of the API',
+      exportName: 'ApiUrl',
     });
   }
 }

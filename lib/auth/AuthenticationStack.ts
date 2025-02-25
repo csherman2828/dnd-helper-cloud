@@ -1,4 +1,10 @@
-import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import {
+  CfnOutput,
+  Duration,
+  RemovalPolicy,
+  Stack,
+  StackProps,
+} from 'aws-cdk-lib';
 import {
   AccountRecovery,
   Mfa,
@@ -57,7 +63,7 @@ export class AuthenticationStack extends Stack {
       enableSmsRole: true,
     });
 
-    userPool.addClient('WebAppClient', {
+    const client = userPool.addClient('WebAppClient', {
       generateSecret: false,
       authFlows: {
         adminUserPassword: true,
@@ -71,6 +77,17 @@ export class AuthenticationStack extends Stack {
       idTokenValidity: Duration.minutes(60),
       enableTokenRevocation: true,
       preventUserExistenceErrors: true,
+    });
+    new CfnOutput(this, 'UserPoolId', {
+      exportName: 'UserPoolId',
+      value: userPool.userPoolId,
+      description: 'The ID of the Cognito User Pool',
+    });
+
+    new CfnOutput(this, 'UserPoolClientId', {
+      exportName: 'UserPoolClientId',
+      value: client.userPoolClientId,
+      description: 'The ID of the Cognito User Pool Client',
     });
   }
 }

@@ -22,6 +22,7 @@ interface HTTPSBucketDomainProps {
 }
 
 class HTTPSBucketDomain extends Construct {
+  public readonly cloudfrontUrl: string;
   constructor(scope: Construct, id: string, props: HTTPSBucketDomainProps) {
     super(scope, id);
 
@@ -66,6 +67,8 @@ class HTTPSBucketDomain extends Construct {
       recordName: domainName,
       target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
+
+    this.cloudfrontUrl = distribution.distributionDomainName;
   }
 }
 

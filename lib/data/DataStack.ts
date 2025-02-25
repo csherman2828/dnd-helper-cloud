@@ -1,4 +1,4 @@
-import { Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import { Stack, StackProps, RemovalPolicy, CfnOutput } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Table, ITable, AttributeType } from 'aws-cdk-lib/aws-dynamodb';
 
@@ -13,6 +13,12 @@ export class DataStack extends Stack {
       partitionKey: { name: 'PK', type: AttributeType.STRING },
       sortKey: { name: 'SK', type: AttributeType.STRING },
       removalPolicy: RemovalPolicy.DESTROY, // NOT recommended for production code
+    });
+
+    new CfnOutput(this, 'TableArn', {
+      value: this.table.tableArn,
+      description: 'The ARN of the DynamoDB table',
+      exportName: 'TableArn',
     });
   }
 }
