@@ -24,6 +24,7 @@ import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito';
 
 interface ApiStackProps {
   github: {
@@ -37,6 +38,7 @@ interface ApiStackProps {
   subdomain: string;
   region: string;
   table: ITable;
+  userPool: IUserPool;
 }
 
 const HTTP_PORT = 80;
@@ -47,8 +49,15 @@ export class ApiStack extends Stack {
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id);
 
-    const { ecrRepo, github, region, subdomain, hostedZoneDomain, table } =
-      props;
+    const {
+      ecrRepo,
+      github,
+      region,
+      subdomain,
+      hostedZoneDomain,
+      table,
+      userPool,
+    } = props;
 
     const fullDomainName = `${subdomain}.${hostedZoneDomain}`;
 
@@ -92,6 +101,13 @@ export class ApiStack extends Stack {
     // Grant the ECS task role access to the DynamoDB table
     table.grantReadWriteData(taskDefinition.taskRole);
 
+    // Grant the ECS task role access to the Cognito user pool
+    userPool.grant(taskDefinition.taskRole, 'cognito-idp:AdminInitiateAuth');
+    userPool.grant(
+      taskDefinition.taskRole,
+      'cognito-idp:AdminRespondToAuthChallenge',
+    );
+
     const container = taskDefinition.addContainer('ExpressContainer', {
       image: ContainerImage.fromEcrRepository(ecrRepo),
       logging: new AwsLogDriver({
@@ -100,7 +116,8 @@ export class ApiStack extends Stack {
       }),
       environment: {
         NODE_ENV: 'production',
-        PORT: `${EXPRESS_PORT}`,
+        CLOUD_PORT: `${EXPRESS_PORT}`,
+        CLOUD_HOST: '0.0.0.0',
       },
     });
     container.addPortMappings({ containerPort: EXPRESS_PORT });

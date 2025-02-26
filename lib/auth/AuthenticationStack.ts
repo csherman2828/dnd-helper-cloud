@@ -7,6 +7,7 @@ import {
 } from 'aws-cdk-lib';
 import {
   AccountRecovery,
+  IUserPool,
   Mfa,
   StringAttribute,
   UserPool,
@@ -15,10 +16,11 @@ import {
 import { Construct } from 'constructs';
 
 export class AuthenticationStack extends Stack {
+  public readonly userPool: IUserPool;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const userPool = new UserPool(this, 'DndHelperAuthentication', {
+    this.userPool = new UserPool(this, 'DndHelperAuthentication', {
       deletionProtection: false,
       removalPolicy: RemovalPolicy.DESTROY,
       signInAliases: {
@@ -63,7 +65,7 @@ export class AuthenticationStack extends Stack {
       enableSmsRole: true,
     });
 
-    const client = userPool.addClient('WebAppClient', {
+    const client = this.userPool.addClient('WebAppClient', {
       generateSecret: false,
       authFlows: {
         adminUserPassword: true,
@@ -80,7 +82,7 @@ export class AuthenticationStack extends Stack {
     });
     new CfnOutput(this, 'UserPoolId', {
       exportName: 'UserPoolId',
-      value: userPool.userPoolId,
+      value: this.userPool.userPoolId,
       description: 'The ID of the Cognito User Pool',
     });
 

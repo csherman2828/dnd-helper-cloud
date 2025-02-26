@@ -31,9 +31,11 @@ export class DndHelperStage extends Stage {
 
     const { region } = env;
 
-    const { table } = new DataStack(this, 'Data');
+    const dataStack = new DataStack(this, 'Data');
 
-    new AuthenticationStack(this, 'Authentication');
+    const { table } = dataStack;
+
+    const authStack = new AuthenticationStack(this, 'Authentication');
     new WebStack(this, 'Web', {
       hostedZoneDomain,
       subdomain: subdomain,
@@ -44,6 +46,7 @@ export class DndHelperStage extends Stage {
         codestarConnectionArn: github.codestarConnectionArn,
       },
     });
+    const { userPool } = authStack;
 
     const apiPlatformStack = new ApiPlatformStack(this, 'ApiPlatform');
 
@@ -61,7 +64,10 @@ export class DndHelperStage extends Stage {
       ecrRepo,
       region,
       table,
+      userPool,
     });
     apiStack.addDependency(apiPlatformStack);
+    apiStack.addDependency(authStack);
+    apiStack.addDependency(dataStack);
   }
 }
